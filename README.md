@@ -21,3 +21,5 @@ python3 main "<query string>"
 ```
 
 Retrieves the top 10 search results for the input query string from Google and computes the distance of the first result with the other 9 results.
+
+Comparison is done only for snippets and not the entire webpage of the search result.
