@@ -14,3 +14,10 @@ Extract the zip file and copy the glove.6B.50d.txt file into the data folder.
 ```
 python3 -m gensim.scripts.glove2word2vec --input data/glove.6B.50d.txt --output data/word2vec.glove.6B.50d.txt
 ```
+
+### Compute the cosine-distance
+```
+python3 main "<query string>"
+```
+
+Retrieves the top 10 search results for the input query string from Google and computes the distance of the first result with the other 9 results.
