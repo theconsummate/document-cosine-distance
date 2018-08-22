@@ -23,7 +23,7 @@ def query_word2vec(source_doc, target_docs):
 def get_search_results(query_str):
     params = {
         "q" : query_str,
-        "location" : "Austin, Texas, United States",
+        # "location" : "Austin, Texas, United States",
         "hl" : "en",
         "google_domain" : "google.com",
         "api_key" : "demo",
