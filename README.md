@@ -40,8 +40,11 @@ search_engine_key=<Custom Search engine key>
 
 ### Compute the cosine-distance
 ```
-python3 main <lang_code> "<query string>"
+python3 main.py <lang_code> "<query string>"
+python3 main.py en "my query"
+python3 main.py it "my query"
 ```
+Lang_code has to be either en or it.
 
 Retrieves the top 10 search results for the input query string from Google and computes the distance of the first result with the other 9 results.
 
