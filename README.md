@@ -20,11 +20,11 @@ python3 -m gensim.scripts.glove2word2vec --input data/glove.6B.50d.txt --output 
 Download from http://hlt.isti.cnr.it/wordembeddings/glove_wiki_window10_size300_iteration50.tar.gz and then copy the extracted files into data folder
 
 ### Create GoogleAPI keys
-#### Create an API key
-Go to https://developers.google.com/custom-search/json-api/v1/overview and 'Get a Key' button in the API key section. Follow the steps along.
+#### Create a Developer API key
+Go to https://developers.google.com/custom-search/json-api/v1/overview and click on 'Get a Key' button in the API key section. Follow the steps along.
 
 #### Custom Search engine key
-Go to https://cse.google.com/cse/ and create a key. In the 'sites to search field', add
+Go to https://cse.google.com/cse/ and create a key. In the 'sites to search field', add the following domains:
 
 ```
 *.com
