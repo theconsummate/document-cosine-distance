@@ -63,7 +63,7 @@ def get_search_results(query_str, language="en"):
                                cx=keys.search_engine_key,
                                # cx='017576662512468239146:omuauf_lfve',
                                ).execute()
-    print(query)
+    # print(query)
     dictionary_results = query['items']
 
     docs = []
@@ -72,6 +72,18 @@ def get_search_results(query_str, language="en"):
         doc = {"id": i, "content": result["snippet"], "link": result["link"], "title": result["title"]}
         docs.append(doc)
     return docs
+
+
+def find_similar_words(source_doc, target_docs, language):
+    model, stopwords = load_model(language)
+    ds = DocSim(model,stopwords=stopwords)
+    source_vec = ds.vectorize(source_doc)
+    for target in target_docs:
+        target_vec = ds.vectorize(target["content"])
+        sims = model.most_similar(positive=[source_vec, target_vec])
+        print("most similar words for doc " + str(target["id"]))
+        print(sims)
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
@@ -84,5 +96,6 @@ possible values for language_code: en or it""")
     docs = get_search_results(query_str, language)
     pp.pprint(docs)
     print("computing similarity ...")
-    query_word2vec(docs[0]["content"], docs[1:], language)
+    # query_word2vec(docs[0]["content"], docs[1:], language)
+    find_similar_words(docs[0]["content"], docs[1:], language)
 
