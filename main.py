@@ -81,6 +81,7 @@ def find_similar_words(source_doc, target_docs, language):
     for target in target_docs:
         target_vec = ds.vectorize(target["content"])
         sims = model.most_similar(positive=[source_vec, target_vec])
+        sims = [x for x in sims if x[0] not in stopwords]
         print("most similar words for doc " + str(target["id"]))
         print(sims)
 
