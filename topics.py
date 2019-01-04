@@ -103,19 +103,20 @@ def find_topics(documents, language):
                                        id2word = dictionary,
                                        passes = 10,
                                        workers = 2)
-    print("topics found in the search results.")
+    topic_words = []
+    # print("topics found in the search results.")
     for idx, topic in lda_model.print_topics(-1):
         print("Topic: {} \nWords: {}".format(idx, topic ))
+        topic_words += re.findall('"([^"]*)"', topic)
         # print("\n")
+    return set(topic_words)
 
 
 def keyword_planner(keywordfile, language):
     contents = csv.reader(codecs.open(keywordfile, 'rU', 'utf-16'), delimiter='\t')
     keywords = [row[0] for row in contents]
-    find_topics(keywords, language)
-    # for row in contents:
-    #     print(row)
-        # print(', '.join(row))
+    return find_topics(keywords, language)
+
 
 
 if __name__ == '__main__':
@@ -128,11 +129,14 @@ possible values for language_code: en or it""")
     query_str = sys.argv[2]
     docs = get_search_results(query_str, language)
     snippets = [doc['content'] for doc in docs]
-    # pp.pprint(docs)
+    print("search results ...")
+    pp.pprint(docs)
     # keys:content, id, link, title
     # print(documents)
-    print("topics in search results")
-    find_topics(snippets, language)
-    print("topics in keywords")
-    keyword_planner('keywords.csv', language)
+    print("topics in search results ...")
+    search_topics = find_topics(snippets, language)
+    print("topics in keywords ...")
+    keyword_topics = keyword_planner('keywords.csv', language)
+    print("topics in keywords which are not present in search results ...")
+    print(keyword_topics - search_topics)
 
