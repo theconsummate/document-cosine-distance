@@ -3,6 +3,8 @@ from googleapiclient.discovery import build
 import pprint
 import sys
 import keys
+import csv
+import codecs
 
 # lda
 import gensim
@@ -79,7 +81,7 @@ def find_topics(documents, language):
     processed_docs = []
 
     for doc in documents:
-        processed_docs.append(preprocess(doc['content'], stemmer))
+        processed_docs.append(preprocess(doc, stemmer))
 
     '''
     Create a dictionary from 'processed_docs' containing the number of times a word appears
@@ -107,6 +109,14 @@ def find_topics(documents, language):
         # print("\n")
 
 
+def keyword_planner(keywordfile, language):
+    contents = csv.reader(codecs.open(keywordfile, 'rU', 'utf-16'), delimiter='\t')
+    keywords = [row[0] for row in contents]
+    find_topics(keywords, language)
+    # for row in contents:
+    #     print(row)
+        # print(', '.join(row))
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
@@ -117,8 +127,12 @@ possible values for language_code: en or it""")
     language = sys.argv[1]
     query_str = sys.argv[2]
     docs = get_search_results(query_str, language)
-    pp.pprint(docs)
+    snippets = [doc['content'] for doc in docs]
+    # pp.pprint(docs)
     # keys:content, id, link, title
     # print(documents)
-    find_topics(docs, language)
+    print("topics in search results")
+    find_topics(snippets, language)
+    print("topics in keywords")
+    keyword_planner('keywords.csv', language)
 
