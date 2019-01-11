@@ -5,6 +5,7 @@ import sys
 import keys
 import csv
 import codecs
+from collections import defaultdict
 
 # lda
 import gensim
@@ -20,6 +21,27 @@ nltk.download('wordnet')
 
 pp = pprint.PrettyPrinter()
 
+
+
+class SnowballStemmerWithReverseLookup(SnowballStemmer):
+    """ A wrapper around snowball stemmer with a reverse lookip table """
+    
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self._stem_memory = defaultdict(set)
+        # switch stem and memstem
+        self._stem=self.stem
+        self.stem=self.memstem
+        
+    def memstem(self, word):
+        """ Wrapper around stem that remembers """
+        stemmed_word = self._stem(word)
+        self._stem_memory[stemmed_word].add(word)
+        return stemmed_word
+        
+    def unstem(self, stemmed_word):
+        """ Reverse lookup """
+        return sorted(self._stem_memory[stemmed_word], key=len)
 
 def get_search_results(query_str, language="en"):
     if language == "en":
@@ -69,15 +91,7 @@ def preprocess(text, stemmer):
 
     return result
 
-def find_topics(documents, language):
-    if language == "en":
-        stemmer = SnowballStemmer("english")
-    elif language == "it":
-        stemmer = SnowballStemmer("italian")
-    else:
-        print("language not supported")
-        sys.exit()
-
+def find_topics(stemmer, documents, language):
     processed_docs = []
 
     for doc in documents:
@@ -112,10 +126,10 @@ def find_topics(documents, language):
     return set(topic_words)
 
 
-def keyword_planner(keywordfile, language):
+def keyword_planner(stemmer, keywordfile, language):
     contents = csv.reader(codecs.open(keywordfile, 'rU', 'utf-16'), delimiter='\t')
     keywords = [row[0] for row in contents]
-    return find_topics(keywords, language)
+    return find_topics(stemmer, keywords, language)
 
 
 
@@ -127,6 +141,13 @@ possible values for language_code: en or it""")
         sys.exit()
     language = sys.argv[1]
     query_str = sys.argv[2]
+    if language == "en":
+        stemmer = SnowballStemmerWithReverseLookup("english")
+    elif language == "it":
+        stemmer = SnowballStemmerWithReverseLookup("italian")
+    else:
+        print("language not supported")
+        sys.exit()
     docs = get_search_results(query_str, language)
     snippets = [doc['content'] for doc in docs]
     print("search results ...")
@@ -134,9 +155,11 @@ possible values for language_code: en or it""")
     # keys:content, id, link, title
     # print(documents)
     print("topics in search results ...")
-    search_topics = find_topics(snippets, language)
+    search_topics = find_topics(stemmer, snippets, language)
     print("topics in keywords ...")
-    keyword_topics = keyword_planner('keywords.csv', language)
+    keyword_topics = keyword_planner(stemmer, 'keywords.csv', language)
     print("topics in keywords which are not present in search results ...")
-    print(keyword_topics - search_topics)
+    diff_topics = keyword_topics - search_topics
+    for topic in  diff_topics:
+        print(topic, stemmer.unstem(topic))
 
