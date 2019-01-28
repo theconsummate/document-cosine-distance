@@ -120,9 +120,12 @@ def find_topics(stemmer, documents, language):
     topic_words = []
     # print("topics found in the search results.")
     for idx, topic in lda_model.print_topics(-1):
+        topic_word = re.findall('"([^"]*)"', topic)
         print("Topic: {} \nWords: {}".format(idx, topic ))
-        topic_words += re.findall('"([^"]*)"', topic)
-        # print("\n")
+        print("reverse lookup of topic words...")
+        print([stemmer.unstem(x) for x in topic_word])
+        topic_words += topic_word
+        print("\n")
     return set(topic_words)
 
 
